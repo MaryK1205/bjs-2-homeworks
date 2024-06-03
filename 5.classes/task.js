@@ -1,31 +1,30 @@
 class PrintEditionItem {
-    name;
-    releaseDate;
-    pagesCount;
-    state = 100;
-    type = null;
+
     constructor(name, releaseDate, pagesCount) {
         this.name = name;
         this.releaseDate = releaseDate;
         this.pagesCount = pagesCount;
+        this.state = 100;
+        this.type = null;
     }
     fix() {
-        return state = this.state * 1.5;
+
+        this.state = this.state * 1.5;
 
     }
-    set(newState) {
+    set state(newState) {
         if (newState < 0) {
             this.state = 0;
         }
         else if (newState > 100) {
             this.state = 100;
         }
-        else {
-            (this.state = newState);
-        }
+        else this._state = newState;
+
     }
-    get() {
-        return this.state;
+
+    get state() {
+        return this._state;
     }
 }
 const sherlock = new PrintEditionItem(
@@ -41,35 +40,123 @@ console.log(sherlock.state); //100
 
 class Magazine extends PrintEditionItem {
     constructor(name, releaseDate, pagesCount, type) {
-        super(name, releaseDate, pagesCount, type)
+        super(name, releaseDate, pagesCount)
         this.type = 'magazine'
 
     }
 }
 class Book extends PrintEditionItem {
-    constructor(name, releaseDate, pagesCount, type, author) {
-        super(name, releaseDate, pagesCount, type)
-        this.type = 'book'
+    constructor(author, name, releaseDate, pagesCount, type) {
+        super(name, releaseDate, pagesCount);
+        this.type = 'book';
         this.author = author;
 
     }
 }
 class NovelBook extends Book {
-    constructor(name, releaseDate, pagesCount, type, author) {
-        super(name, releaseDate, pagesCount, type, author);
+    constructor(author, name, releaseDate, pagesCount, type) {
+        super(author, name, releaseDate, pagesCount, type);
         this.type = 'novel';
     }
 }
-class NovelBook extends Book {
-    constructor(name, releaseDate, pagesCount, type, author) {
-        super(name, releaseDate, pagesCount, type, author);
+class FantasticBook extends Book {
+    constructor(author, name, releaseDate, pagesCount, type) {
+        super(author, name, releaseDate, pagesCount, type);
         this.type = 'fantastic';
     }
 }
-class NovelBook extends Book {
-    constructor(name, releaseDate, pagesCount, type, author) {
-        super(name, releaseDate, pagesCount, type, author)
+class DetectiveBook extends Book {
+    constructor(author, name, releaseDate, pagesCount, type) {
+        super(author, name, releaseDate, pagesCount, type)
         this.type = 'detective';
     }
 }
+
+const picknick = new FantasticBook(
+    "Аркадий и Борис Стругацкие",
+    "Пикник на обочине",
+    1972,
+    168
+);
+
+
+console.log(picknick.author); //"Аркадий и Борис Стругацкие"
+picknick.state = 10;
+console.log(picknick.state); //10
+picknick.fix();
+console.log(picknick.state); //15
+
+
+
+class Library {
+    constructor(name) {
+        this.name = name;
+        this.books = [];
+    }
+
+    addBook(book) {
+        if (book.state > 30) {
+            this.books.push(book);
+        }
+
+    }
+
+    findBookBy(key, value) {
+        if (this.books.reduce((index, obj, i) => (obj[key] === value ? i : index)) >= 0) {
+            let ind = this.books.reduce((index, obj, i) => (obj[key] === value ? i : index))
+            return this.books[ind];
+        }
+        else return null;
+
+    }
+
+    giveBookByName(bookName) {
+        if (this.books.findIndex(el => el.name === bookName) >= 0) {
+            const ind = this.books.findIndex(el => el.name === bookName);
+            const res = this.books[ind];
+            this.books.splice(ind, 1);
+            return res;
+
+        }
+
+        else return null;
+    }
+
+
+}
+const library = new Library("Библиотека имени Ленина");
+
+library.addBook(
+    new DetectiveBook(
+        "Артур Конан Дойл",
+        "Полное собрание повестей и рассказов о Шерлоке Холмсе в одном томе",
+        2019,
+        1008
+    )
+);
+library.addBook(
+    new FantasticBook(
+        "Аркадий и Борис Стругацкие",
+        "Пикник на обочине",
+        1972,
+        168
+    )
+);
+library.addBook(new NovelBook("Герберт Уэллс", "Машина времени", 1895, 138));
+library.addBook(new Magazine("Мурзилк", 1924, 60));
+
+console.log(library);
+
+console.log(library.findBookBy("name", "Мурзилка")); //null
+console.log(library.findBookBy("releaseDate", 1924).name); //"Мурзилка"
+
+console.log("Количество книг до выдачи: " + library.books.length); //Количество книг до выдачи: 4
+library.giveBookByName("Машина времени");
+console.log("Количество книг после выдачи: " + library.books.length); //Количество книг после выдачи: 3
+
+
+
+
+
+
 
